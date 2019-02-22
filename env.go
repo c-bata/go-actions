@@ -2,6 +2,11 @@ package actions
 
 import (
 	"os"
+	"path/filepath"
+)
+
+const (
+	prefixGithubRef = "refs/heads/"
 )
 
 // GetHome returns the path to the GitHub home directory used to store user data. Value: /github/home.
@@ -49,9 +54,23 @@ func GetGithubSHA() string {
 	return os.Getenv("GITHUB_SHA")
 }
 
+// GetDirContainsCopyOfRepository the directory path contains a copy of the repository.
+func GetDirContainsCopyOfRepository() string {
+	return filepath.Join(GithubWorkspace, GetGithubSHA())
+}
+
 // GetGithubRef returns the branch or tag ref that triggered the workflow.
 func GetGithubRef() string {
 	return os.Getenv("GITHUB_REF")
+}
+
+// GetTagOrBranchName returns the branch or tag name that triggered the workflow.
+func GetTagOrBranchName() string {
+	ref := GetGithubRef()
+	if ref == "" {
+		return ""
+	}
+	return ref[len(prefixGithubRef):]
 }
 
 // GetGithubToken returns a GitHub App installation token scoped to the repository containing the workflow file.
